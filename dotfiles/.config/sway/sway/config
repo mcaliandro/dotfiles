@@ -63,9 +63,8 @@ input "2:7:SynPS/2_Synaptics_TouchPad" {
     # Reload the configuration file
     bindsym $mod+Shift+c reload
 
-    # Exit sway (logs you out of your Wayland session)
-    bindsym $mod+Shift+e exec \
-        swaynag -t warning -m 'Exit sway?' -B 'Yes' 'swaymsg exit'
+    # Lock screen
+    bindsym $mod+Shift+l exec swaylock -f -c 000000
 #
 # Moving around:
 #
@@ -163,44 +162,54 @@ mode "resize" {
 }
 bindsym $mod+r mode "resize"
 #
-# Laptop FnKeys
-# Decrease/increase volume
-bindsym XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5%
-bindsym XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%
-# Mute/unmute sound and mic
-bindsym XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle
-bindsym XF86AudioMicMute exec pactl set-source-mute @DEFAULT_SOURCE@ toggle
-# Decrease/increase brightness
-bindsym XF86MonBrightnessDown exec light -U 5
-bindsym XF86MonBrightnessUp exec light -A 5
+# Exit mode
 #
-# Status bar:
+#set $exit "exit: [s]leep, [p]oweroff, [r]eboot, [l]ogout"
+#mode $exit {
+#    bindsym --to-code {
+#        s exec systemctl suspend, mode "default"
+#        p exec systemctl poweroff
+#        r exec systemctl reboot
+#        l exec swaymsg exit
+#    
+#        Return mode "default"
+#        Escape mode "default"
+#        $mod+x mode "default"
+#    }
+#}
+# bindsym --to-code $mod+x mode $exit
+#
+# Laptop FnKeys
+#
+    # Decrease/increase volume
+    bindsym XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5%
+    bindsym XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%
+
+    # Mute/unmute sound and mic
+    bindsym XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle
+    bindsym XF86AudioMicMute exec pactl set-source-mute @DEFAULT_SOURCE@ toggle
+
+    # Decrease/increase brightness
+    bindsym XF86MonBrightnessDown exec light -U 5
+    bindsym XF86MonBrightnessUp exec light -A 5
+#
+# Status bar
 #
 bar {
     swaybar_command waybar
 }
 
-### Graphical interface
-font Noto Sans Regular 10
 
-# gaps
+### GUI
+# fonts
+font Noto Sans Regular 10
+# window border style
 gaps inner 12
 default_border none
+# cursor theme
+seat seat0 xcursor_theme Sunity-cursors 24
 
-
-### Workaround for GTK apps hanging during init
-# See https://github.com/swaywm/sway/wiki#gtk-applications-take-20-seconds-to-start
-# See https://github.com/swaywm/sway/issues/5732
-exec systemctl --user import-environment DISPLAY WAYLAND_DISPLAY SWAYSOCK
-exec dbus-update-activation-environment 2>/dev/null && \
-     dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK
-
-
-### Autostart
-
-exec /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
-exec mako
-
+# setup GTK themes
 exec_always {
     gsettings set org.gnome.desktop.interface gtk-applications-prefer-dark-theme true
     gsettings set org.gnome.desktop.interface gtk-theme "Nordic"
@@ -210,4 +219,35 @@ exec_always {
     gsettings set org.gnome.desktop.wm.preferencest theme "Nordic"
 }
 
-include /etc/sway/config.d/*
+# setup floating window applications
+# list the properties of open windows: $ swaymsg -t get_tree
+
+# Gnome applications
+for_window [app_id="celluloid"] floating enable
+for_window [app_id="eog"] floating enable
+for_window [app_id="evince"] floating enable
+for_window [app_id="evolution"] floating enable
+for_window [app_id="gedit"] floating enable
+for_window [app_id="gnome-calculator"] floating enable
+for_window [app_id="gnome-clocks"] floating enable
+for_window [app_id="gnome-system-monitor"] floating enable
+for_window [app_id="nautilus"] floating enable
+
+# GTK/QT based applications
+for_window [app_id="code"] floating enable
+for_window [app_id="telegram-desktop"] floating enable
+for_window [app_id="vlc"] floating enable
+
+# Workaround for GTK apps hanging during init
+# See https://github.com/swaywm/sway/wiki#gtk-applications-take-20-seconds-to-start
+# See https://github.com/swaywm/sway/issues/5732
+exec systemctl --user import-environment DISPLAY WAYLAND_DISPLAY SWAYSOCK
+exec dbus-update-activation-environment 2>/dev/null && \
+     dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK
+
+# Autostart
+exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
+exec mako
+
+
+include ~/.config/sway/conf.d/*

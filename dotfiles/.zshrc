@@ -1,5 +1,5 @@
 # set env vars for oh-my-zsh
-export ZSH="$HOME/.config/oh-my-zsh"
+export ZSH="$HOME/.oh-my-zsh"
 #export ZDOTDIR="$HOME/.config/zsh"
 
 # set theme
@@ -10,7 +10,9 @@ plugins=(
     ansible
     archlinux
     git
+    kubectl
     systemd
+    terraform
 )
 
 # use oh-my-zsh

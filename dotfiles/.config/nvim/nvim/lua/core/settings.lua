@@ -47,10 +47,10 @@ set.splitright = true           -- ... and to the right
 
 -- enable termguicolors and use 'nord' colors scheme
 -- see plugin shaunsingh/nord.nvim
-vim.cmd [[
-if (has("termguicolors"))
+vim.cmd
+[[
+  if (has("termguicolors"))
     set termguicolors
-endif
- 
-colorscheme nord
+  endif
+  colorscheme nord
 ]]

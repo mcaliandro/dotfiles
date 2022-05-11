@@ -5,12 +5,12 @@
 font=Notot Sans Regular 10
 format=<b>%a ⏵</b> %s\n%b
 sort=-time
-output=DP-2
+output=eDP-1
 layer=overlay
-anchor=bottom-center
+anchor=top-center
 background-color=#2e3440
 width=300
-height=110
+height=120
 margin=5
 padding=0,5,10
 border-size=2

@@ -12,6 +12,7 @@ dirs=(
     ".config/mako"
     ".config/nvim"
     ".config/sway"
+    ".config/swaylock"
     ".config/tmux"
     ".config/waybar"
     ".config/wofi"
