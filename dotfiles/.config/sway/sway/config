@@ -9,15 +9,18 @@ set $mod Mod4
 # Preferred terminal emulator: alacritty
 set $term alacritty
 
+# Preferred lock screen component: swaylock
+set $lock swaylock
+
 # Preferred application launcher: wofi
-set $menu wofi --show=drun --lines=5 --prompt=""
+set $menu wofi --show=drun --lines=6 --columns=2 --prompt="" -I
 
 
 ### Output configuration
 
 # Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
 output * {
-    bg ~/.local/share/backgrounds/2022-04-29-00-10-41-deviantart_bruoneightwo_archlinux_1920x1080.png fill
+    bg ~/.local/share/backgrounds/deviantart_bruoneightwo_archlinux_1920x1080.png fill
 }
 
 # Laptop panel configuration
@@ -48,10 +51,16 @@ input "2:7:SynPS/2_Synaptics_TouchPad" {
     bindsym $mod+Return exec $term
 
     # Kill focused window
-    bindsym $mod+Shift+q kill
+    bindsym $mod+q kill
 
     # Start your launcher
     bindsym $mod+d exec $menu
+
+    # Manually lock the screen
+    bindsym $mod+Shift+l exec $lock
+
+    # Exit menu based on wofi launcher
+    bindsym $mod+Shift+q exec ~/.config/wofi/powermenu
 
     # Drag floating windows by holding down $mod and left mouse button.
     # Resize them with right mouse button + $mod.
@@ -62,9 +71,6 @@ input "2:7:SynPS/2_Synaptics_TouchPad" {
 
     # Reload the configuration file
     bindsym $mod+Shift+c reload
-
-    # Lock screen
-    bindsym $mod+Shift+l exec swaylock -f -c 000000
 #
 # Moving around:
 #
@@ -162,23 +168,6 @@ mode "resize" {
 }
 bindsym $mod+r mode "resize"
 #
-# Exit mode
-#
-#set $exit "exit: [s]leep, [p]oweroff, [r]eboot, [l]ogout"
-#mode $exit {
-#    bindsym --to-code {
-#        s exec systemctl suspend, mode "default"
-#        p exec systemctl poweroff
-#        r exec systemctl reboot
-#        l exec swaymsg exit
-#    
-#        Return mode "default"
-#        Escape mode "default"
-#        $mod+x mode "default"
-#    }
-#}
-# bindsym --to-code $mod+x mode $exit
-#
 # Laptop FnKeys
 #
     # Decrease/increase volume
@@ -200,14 +189,11 @@ bar {
 }
 
 
-### GUI
-# fonts
+# Fonts, window style, cursor themeGUI
 font Noto Sans Regular 10
-# window border style
 gaps inner 12
 default_border none
-# cursor theme
-seat seat0 xcursor_theme Sunity-cursors 24
+seat seat0 xcursor_theme Nordic-cursors 24
 
 # setup GTK themes
 exec_always {
@@ -215,39 +201,46 @@ exec_always {
     gsettings set org.gnome.desktop.interface gtk-theme "Nordic"
     gsettings set org.gnome.desktop.interface icon-theme "Papier-Dark"
     gsettings set org.gnome.desktop.interface font-name "Noto Sans Regular 10"
-    gsettings set org.gnome.desktop.interface cursor-theme "Sunity-cursors"
+    gsettings set org.gnome.desktop.interface cursor-theme "Nordic-cursors"
     gsettings set org.gnome.desktop.wm.preferencest theme "Nordic"
 }
 
 # setup floating window applications
-# list the properties of open windows: $ swaymsg -t get_tree
+# -> list the properties of open windows: $ swaymsg -t get_tree
 
-# Gnome applications
-for_window [app_id="celluloid"] floating enable
-for_window [app_id="eog"] floating enable
+for_window [app_id="^gnome$"] floating enable
 for_window [app_id="evince"] floating enable
-for_window [app_id="evolution"] floating enable
 for_window [app_id="gedit"] floating enable
-for_window [app_id="gnome-calculator"] floating enable
-for_window [app_id="gnome-clocks"] floating enable
-for_window [app_id="gnome-system-monitor"] floating enable
 for_window [app_id="nautilus"] floating enable
 
-# GTK/QT based applications
-for_window [app_id="code"] floating enable
-for_window [app_id="telegram-desktop"] floating enable
-for_window [app_id="vlc"] floating enable
+# the same for generated windows
+for_window [app_id="^xdg-desktop-portal$"] floating enable;
+for_window [app_id="^xdg-desktop-portal$"] border none;
+for_window [app_id="^xdg-desktop-portal$"] resize set 800 600
+for_window [title="(?:Open|Save) (?:File|Folder|As)"] floating enable;
+for_window [title="(?:Open|Save) (?:File|Folder|As)"] border none;
+for_window [title="(?:Open|Save) (?:File|Folder|As)"] resize set 800 600
+
+# stop swayidle for the following windows in fullscreen mode
+for_window [class="firefox"] inhibit_idle fullscreen
 
 # Workaround for GTK apps hanging during init
 # See https://github.com/swaywm/sway/wiki#gtk-applications-take-20-seconds-to-start
-# See https://github.com/swaywm/sway/issues/5732
-exec systemctl --user import-environment DISPLAY WAYLAND_DISPLAY SWAYSOCK
-exec dbus-update-activation-environment 2>/dev/null && \
-     dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK
+exec dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK
 
-# Autostart
-exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
+# Enable WebRTC screen sharing
+# See https://wiki.archlinux.org/title/PipeWire#WebRTC_screen_sharing
+exec systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
+
+# Use mako notifier 
 exec mako
 
+# lock screen before suspend
+exec swayidle -w \
+    timeout 300 $lock \
+    timeout 600 '[[ "$(cat /sys/class/power_supply/AC/online)" = "0" ]] && systemctl suspend || swaymsg "output * dpms off"' \
+    resume 'swaymsg "output * dpms on"' \
+    before-sleep $lock
 
-include ~/.config/sway/conf.d/*
+# may include additional configurations
+#include ~/.config/sway/conf.d/*

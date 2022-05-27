@@ -16,6 +16,8 @@ dirs=(
     ".config/tmux"
     ".config/waybar"
     ".config/wofi"
+    ".config/xdg-desktop-portal-wlr"
+    ".config/zathura"
     #".local/share/applications"
 )
 

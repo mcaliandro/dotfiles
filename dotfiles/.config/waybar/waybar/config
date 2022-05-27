@@ -69,6 +69,7 @@
     },
 
     "clock": {
+        "interval": 60,
         "tooltip-format": "<big>{:%H:%M}</big>",
         "format-alt": "{:%e %B %Y}"
     },

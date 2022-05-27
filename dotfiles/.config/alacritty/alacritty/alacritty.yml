@@ -76,4 +76,4 @@ font:
     style: Italic
   size: 9.5
 window:
-  opacity: 1.0
+  opacity: 0.95
