@@ -28,23 +28,12 @@ return require('packer').startup(function(use)
   -- color scheme
   use 'shaunsingh/nord.nvim'
 
-  -- greeter
-  use {
-    'goolord/alpha-nvim',
-    config = function()
-      require('alpha').setup(require('alpha.themes.dashboard').config)
-    end
-  }
-
   -- indentation style
   use 'lukas-reineke/indent-blankline.nvim'
 
   -- file explorer tree + related icons set
   use 'kyazdani42/nvim-tree.lua'
   use 'kyazdani42/nvim-web-devicons'
-
-  -- markdown preview
-  use {'ellisonleao/glow.nvim', branch = 'main'}
 
   -- status line
   use 'nvim-lualine/lualine.nvim'

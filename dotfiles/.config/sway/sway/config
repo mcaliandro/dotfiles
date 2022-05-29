@@ -13,8 +13,7 @@ set $term alacritty
 set $lock swaylock
 
 # Preferred application launcher: wofi
-set $menu wofi --show=drun --lines=6 --columns=2 --prompt="" -I
-
+set $menu wofi --show=drun -I --lines=6 --columns=2 --prompt=""
 
 ### Output configuration
 
@@ -23,13 +22,17 @@ output * {
     bg ~/.local/share/backgrounds/deviantart_bruoneightwo_archlinux_1920x1080.png fill
 }
 
-# Laptop panel configuration
+# Laptop panel configuration [CENTERED]
 output eDP-1 {
-    resolution 1920x1080 position 1920,0
+    resolution 1920x1080 position 0,0
 }
-# External monitor
+# External monitor via HDMI output [ON THE LEFT-SIDE]
+output HDMI-A-1 {
+    resolution 1920x1080 position -1920,0
+}
+# External monitor via docking station [ON THE RIGHT-SIDE]
 output DP-3 {
-    resolution 1920x1080 position 3840,0
+    resolution 1920x1080 position 1920,0
 }
 # get the names of the outputs by running: swaymsg -t get_outputs
 
@@ -195,7 +198,7 @@ gaps inner 12
 default_border none
 seat seat0 xcursor_theme Nordic-cursors 24
 
-# setup GTK themes
+# Setup GTK themes
 exec_always {
     gsettings set org.gnome.desktop.interface gtk-applications-prefer-dark-theme true
     gsettings set org.gnome.desktop.interface gtk-theme "Nordic"
@@ -205,32 +208,38 @@ exec_always {
     gsettings set org.gnome.desktop.wm.preferencest theme "Nordic"
 }
 
-# setup floating window applications
+# setup floating windows
 # -> list the properties of open windows: $ swaymsg -t get_tree
 
-for_window [app_id="^gnome$"] floating enable
+# for Gnome applications
+for_window [app_id="gnome"] floating enable
+for_window [app_id="Celluloid"] floating enable
+for_window [app_id="dconf"] floating enable
+for_window [app_id="eog"] floating enable
 for_window [app_id="evince"] floating enable
 for_window [app_id="gedit"] floating enable
-for_window [app_id="nautilus"] floating enable
+
+# for GTK or Electron-based applications 
+for_window [app_id="firefox"] floating enable
+for_window [app_id="thunderbird"] floating enable
+for_window [app_id="Code"] floating enable
+for_window [app_id="Telegram"] floating enable
 
 # the same for generated windows
-for_window [app_id="^xdg-desktop-portal$"] floating enable;
-for_window [app_id="^xdg-desktop-portal$"] border none;
-for_window [app_id="^xdg-desktop-portal$"] resize set 800 600
 for_window [title="(?:Open|Save) (?:File|Folder|As)"] floating enable;
 for_window [title="(?:Open|Save) (?:File|Folder|As)"] border none;
 for_window [title="(?:Open|Save) (?:File|Folder|As)"] resize set 800 600
 
 # stop swayidle for the following windows in fullscreen mode
-for_window [class="firefox"] inhibit_idle fullscreen
-
-# Workaround for GTK apps hanging during init
-# See https://github.com/swaywm/sway/wiki#gtk-applications-take-20-seconds-to-start
-exec dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK
+for_window [app_id="firefox"] inhibit_idle fullscreen
 
 # Enable WebRTC screen sharing
 # See https://wiki.archlinux.org/title/PipeWire#WebRTC_screen_sharing
 exec systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
+
+# Workaround for GTK apps hanging during init
+# See https://github.com/swaywm/sway/wiki#gtk-applications-take-20-seconds-to-start
+exec dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP
 
 # Use mako notifier 
 exec mako

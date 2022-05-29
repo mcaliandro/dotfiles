@@ -21,13 +21,6 @@ source $ZSH/oh-my-zsh.sh
 
 # === User configuration ===
 
-# user defined env vars
-export EDITOR=nvim
-export TERM=xterm-256color
-export GDK_BACKEND=wayland
-export MOZ_ENABLE_WAYLAND=1
-export XDG_CURRENT_DESKTOP=${XDG_CURRENT_DESKTOP:-sway}
-
 # alias for ls command, coloring terminal
 alias ls='ls --color=auto'
 

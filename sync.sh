@@ -7,6 +7,7 @@ dirs=(
     ".config/code-flags.conf"
     # --- directories ---
     ".config/alacritty"
+    ".config/environment.d"
     ".config/gtk-3.0"
     ".config/gtk-4.0"
     ".config/mako"
