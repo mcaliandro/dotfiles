@@ -1,5 +1,7 @@
+height=800
+width=800
 mode=run
+term=footclient
 insensitive=true
-term=alacritty
 hide_scroll=true
 location=0

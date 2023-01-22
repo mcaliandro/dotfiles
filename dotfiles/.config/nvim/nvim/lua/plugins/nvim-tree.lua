@@ -1,5 +1,4 @@
-require("nvim-tree").setup {
-}
+require('nvim-tree').setup({})
 
 --[[
 -- setup with all defaults

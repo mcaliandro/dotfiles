@@ -45,9 +45,6 @@ return require('packer').startup(function(use)
   -- tabline plugin
   use 'romgrk/barbar.nvim'
 
-  -- terminal plugin
-  use 'akinsho/toggleterm.nvim'
-
   -- Automatically set up your configuration after cloning packer.nvim
   -- Put this at the end after all plugins
   if packer_bootstrap then

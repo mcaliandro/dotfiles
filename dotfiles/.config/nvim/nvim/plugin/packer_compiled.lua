@@ -109,11 +109,6 @@ _G.packer_plugins = {
     path = "/home/matteo/.local/share/nvim/site/pack/packer/start/packer.nvim",
     url = "https://github.com/wbthomason/packer.nvim"
   },
-  ["toggleterm.nvim"] = {
-    loaded = true,
-    path = "/home/matteo/.local/share/nvim/site/pack/packer/start/toggleterm.nvim",
-    url = "https://github.com/akinsho/toggleterm.nvim"
-  },
   ["tree-sitter"] = {
     loaded = true,
     path = "/home/matteo/.local/share/nvim/site/pack/packer/start/tree-sitter",

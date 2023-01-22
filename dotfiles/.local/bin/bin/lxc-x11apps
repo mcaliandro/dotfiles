@@ -1,0 +1,21 @@
+#!/bin/bash
+
+instance=$1; shift
+command=$@
+
+if [[ "$(systemctl is-active lxd)" = "inactive" ]]; then
+    notify-send 'Warning from "lxc-x11apps"!' \
+        'The systemd service "lxd.service" is not active' \
+        --icon=dialog-information
+    exit 1
+fi
+
+status=$(lxc list --format=json | jq -r '.[] | select(.name == "'$instance'") | .state.status')
+if [[ "$status" = "Stopped" ]]; then
+    notify-send 'Warning from "lxc-x11apps"!' \
+        'The lxc instance "'$instance'" is not running' \
+        --icon=dialog-information
+    exit 1
+fi
+
+lxc exec $instance -- sudo --login --user=lxd bash -ilc "$command"

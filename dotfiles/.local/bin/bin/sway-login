@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# If you use systemd and want sway output to go to the journal, use this
+# instead of the `exec sway $@:
+#
+#    exec systemd-cat --identifier=sway sway $@
+#
+#exec sway $@
+exec systemd-cat --identifier=sway sway $@

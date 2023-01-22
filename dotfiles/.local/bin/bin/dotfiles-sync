@@ -1,0 +1,88 @@
+#!/bin/bash
+
+REPO_DIR="$HOME/Workspace/github.com/mcaliandro/dotfiles"
+
+dot_items=(
+# files
+    ".profile"
+    ".zshenv"
+    ".config/chromium-flags.conf"
+    ".config/code-flags.conf"
+# dirs
+    ".config/dconf"
+    ".config/environment.d"
+    ".config/foot"
+    ".config/gtk-3.0"
+    ".config/k9s"
+    ".config/mako"
+    ".config/mpv"
+    ".config/networkmanager-dmenu"
+    ".config/nnn"
+    ".config/nvim"
+    ".config/ohmyzsh-custom"
+    ".config/sway"
+    ".config/swaylock"
+    ".config/systemd"
+    ".config/tmux"
+    ".config/waybar"
+    ".config/wofi"
+    ".config/xdg-desktop-portal-wlr"
+    ".config/zathura"
+    ".config/zsh"
+    ".local/bin"
+    ".local/share/applications"
+    ".local/share/backgrounds"
+)
+
+# 'sync' dotfiles between user's home dir and git repo folder
+function sync_items {
+    source_dir=$1; dest_dir=$2
+    for item in ${dot_items[@]}; do
+        /usr/bin/rsync -avzh --mkpath $source_dir/$item $dest_dir/$item
+        echo
+    done
+}
+
+# pull updates from github repo, then sync
+function git_pull {
+    cd $REPO_DIR
+    /usr/bin/git pull
+}
+
+# sync before pushing updates to github
+function git_push {
+    cd $REPO_DIR
+    /usr/bin/git add .
+    /usr/bin/git commit -m "updates $(date +%F\ %T)"
+    /usr/bin/git push
+}
+
+
+if [[ ! -d "$REPO_DIR" ]]; then
+    echo "Error: directory \"$REPO_DIR\" does not exist"
+    exit 1
+fi
+
+repo_root=$REPO_DIR/dotfiles
+action=${1:-sync}
+if [[ ! "$action" =~ ^(pull|push|sync)$ ]]; then
+    echo "Error: unknown command \"$action\""
+    echo "Allowed commands: {pull|push}"
+    exit 1
+fi
+
+case $action in
+pull)
+    # if 'pull', $HOME is updated with dotfiles in git repo
+    git_pull && sync_items $repo_root $HOME ;;
+push)
+    # if 'push', sync the repo with updates in $HOME 
+    sync_items $HOME $repo_root && git_push ;;
+sync)
+    # if 'sync', just update this stub with the dotfiles in $HOME, without pushing on git repo
+    sync_items $HOME $repo_root ;;
+*)
+    # exit in any other case
+    exit 1 ;;
+esac
+
